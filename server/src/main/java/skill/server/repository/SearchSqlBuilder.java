@@ -61,6 +61,9 @@ public class SearchSqlBuilder {
         if (request.getSkillName() != null && !request.getSkillName().isBlank()) {
             sql.append(" AND s.skill_name LIKE ? ");
             params.add("%" + request.getSkillName().trim() + "%");
+            // 一致にするなら　
+            // sql.append(" AND s.skill_name = ? ");
+            //params.add(request.getSkillName().trim());
         }
     }
 
