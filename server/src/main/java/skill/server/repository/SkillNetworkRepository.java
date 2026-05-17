@@ -2,7 +2,6 @@ package skill.server.repository;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import simplex.bn26.master.server.dto.response.*;
 import skill.server.dto.response.*;
 
 import java.util.List;
