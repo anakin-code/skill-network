@@ -1,12 +1,8 @@
-import PersonalSkillNetwork
-  from "./components/PersonalSkillNetwork";
+import DashboardPage from "./pages/DashboardPage";
+import "./App.css";
 
 function App() {
-  return (
-    <div>
-      <PersonalSkillNetwork />
-    </div>
-  );
+  return <DashboardPage />;
 }
 
 export default App;
