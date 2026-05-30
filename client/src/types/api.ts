@@ -1,13 +1,14 @@
 export type SkillGraphNode = {
   id: number;
   label: string;
-  type: string;
+  totalMonths: number;
 };
 
 export type SkillGraphEdge = {
   source: number;
   target: number;
   weight: number;
+  coMonths: number;
 };
 
 export type SkillGraphResponse = {
@@ -15,14 +16,43 @@ export type SkillGraphResponse = {
   edges: SkillGraphEdge[];
 };
 
-export type PersonalSkillGraphNode = {
+export type CareerResponse = {
+  careerId: number;
+  projectId: number;
+  projectName: string;
+  projectContent: string;
+  divisionName: string;
+  companyName: string;
+  startTime: string;
+  endTime: string | null;
+  skillNames: string[];
+};
+
+export type SkillExperienceResponse = {
+  skillId: number;
+  skillName: string;
+  totalYears: number;
+  totalMonths: number;
+};
+
+export type ProfileResponse = {
+  hrid: string;
+  name: string;
+  mailAddress: string;
+  free: string;
+  rankName: string;
+  careers: CareerResponse[];
+  skillExperiences: SkillExperienceResponse[];
+};
+
+export type PersonalSkillNode = {
   id: number;
   label: string;
   months: number;
   normalizedSize: number;
 };
 
-export type PersonalSkillGraphEdge = {
+export type PersonalSkillEdge = {
   source: number;
   target: number;
   months: number;
@@ -30,28 +60,15 @@ export type PersonalSkillGraphEdge = {
 };
 
 export type PersonalSkillGraphResponse = {
-  hrid: string;
-  nodes: PersonalSkillGraphNode[];
-  edges: PersonalSkillGraphEdge[];
+  nodes: PersonalSkillNode[];
+  edges: PersonalSkillEdge[];
 };
 
-export type CareerResponse = {
-  careerId: number;
-  projectId: number;
-  projectContent: string;
-  projectName: string;
-  startTime: string;
-  endTime: string | null;
-  skillNames: string[];
-};
-
-export type ProfileResponse = {
+export type SimilarProfileResponse = {
   hrid: string;
   name: string;
-  mailAddress: string;
-  rankName: string;
-  free: string;
-  careers: CareerResponse[];
+  similarity: number;
+  commonSkillNames: string;
 };
 
 export type ExpertResponse = {
@@ -59,19 +76,5 @@ export type ExpertResponse = {
   name: string;
   mailAddress: string;
   rankName: string;
-  skillNames: string;
-  years: number;
-  months: number;
-  score: number;
-};
-
-export type SimilarProfileResponse = {
-  hrid: string;
-  name: string;
-  mailAddress: string;
-  rankName: string;
-  skillNames: string;
-  commonSkillNames: string;
-  commonSkillCount: number;
-  similarity: number;
+  totalMonths: number;
 };

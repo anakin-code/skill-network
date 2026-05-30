@@ -26,26 +26,39 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<ProfileResponse>();
   const [personalGraph, setPersonalGraph] =
     useState<PersonalSkillGraphResponse>();
-  const [similarProfiles, setSimilarProfiles] = useState<
-    SimilarProfileResponse[]
-  >([]);
+  const [similarProfiles, setSimilarProfiles] =
+    useState<SimilarProfileResponse[]>([]);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    api.getSkillGraph().then(setGraph).catch(console.error);
+    api.getSkillGraph()
+      .then(setGraph)
+      .catch((error) => setErrorMessage(String(error)));
   }, []);
 
   useEffect(() => {
-    api.getProfile(selectedHrid).then(setProfile).catch(console.error);
-    api.getPersonalGraph(selectedHrid).then(setPersonalGraph).catch(console.error);
-    api
-      .getSimilarProfiles(selectedHrid, 5)
+    setErrorMessage("");
+
+    api.getProfile(selectedHrid)
+      .then(setProfile)
+      .catch((error) => setErrorMessage(String(error)));
+
+    api.getPersonalGraph(selectedHrid)
+      .then(setPersonalGraph)
+      .catch((error) => setErrorMessage(String(error)));
+
+    api.getSimilarProfiles(selectedHrid, 5)
       .then(setSimilarProfiles)
-      .catch(console.error);
+      .catch((error) => setErrorMessage(String(error)));
   }, [selectedHrid]);
 
   const handleSelectSkill = (skillName: string) => {
     setSelectedSkill(skillName);
-    api.getExperts(skillName).then(setExperts).catch(console.error);
+
+    api.getExperts(skillName)
+      .then(setExperts)
+      .catch((error) => setErrorMessage(String(error)));
   };
 
   return (
@@ -63,7 +76,9 @@ export default function DashboardPage() {
         <header className="header">
           <div>
             <h2>スキル可視化・社員検索システム</h2>
-            <p>社員のスキル・経歴・有識者をネットワークで可視化</p>
+            <p>
+              社員のスキル・経歴・有識者をネットワークで可視化
+            </p>
           </div>
 
           <div className="search-area">
@@ -72,23 +87,45 @@ export default function DashboardPage() {
               onChange={(e) => setSelectedHrid(e.target.value)}
               placeholder="社員ID 例: A001"
             />
-            <button onClick={() => setSelectedHrid(selectedHrid)}>表示</button>
           </div>
         </header>
+
+        {errorMessage && (
+          <p className="error-message">
+            {errorMessage}
+          </p>
+        )}
 
         <section className="dashboard-grid">
           <div className="main-graph-card card">
             <h3>スキルネットワーク</h3>
-            <SkillGraph graph={graph} onSelectSkill={handleSelectSkill} />
+            <SkillGraph
+              graph={graph}
+              onSelectSkill={handleSelectSkill}
+            />
           </div>
 
-          <ProfilePanel profile={profile} similarProfiles={similarProfiles} />
+          <div className="profile-card">
+            <ProfilePanel
+              profile={profile}
+              similarProfiles={similarProfiles}
+            />
+          </div>
 
-          <CareerPanel careers={profile?.careers ?? []} />
+          <div className="expert-card">
+            <ExpertPanel
+              selectedSkill={selectedSkill}
+              experts={experts}
+            />
+          </div>
 
-          <ExpertPanel selectedSkill={selectedSkill} experts={experts} />
+          <div className="personal-graph-card">
+            <PersonalGraph graph={personalGraph} />
+          </div>
 
-          <PersonalGraph graph={personalGraph} />
+          <div className="career-card">
+            <CareerPanel careers={profile?.careers ?? []} />
+          </div>
         </section>
       </main>
     </div>

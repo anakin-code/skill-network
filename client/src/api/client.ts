@@ -1,42 +1,46 @@
-import type {
-  ExpertResponse,
-  PersonalSkillGraphResponse,
-  ProfileResponse,
-  SimilarProfileResponse,
-  SkillGraphResponse,
-} from "../types/api";
+const API_BASE_URL = 'http://localhost:8080';
 
-const API_BASE = "http://localhost:8080";
+async function fetchJson<T>(path: string): Promise<T> {
+  const response = await fetch(`${API_BASE_URL}${path}`);
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${url}`);
-
-  if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
   }
 
-  return res.json();
+  return response.json();
 }
 
 export const api = {
-  getSkillGraph: () =>
-    fetchJson<SkillGraphResponse>("/api/skill-network/graph"),
+  getSkillGraph: async () => {
+    const data = await fetchJson<{
+      nodes: { id: number; name: string; totalMonths: number }[];
+      edges: { source: number; target: number; coMonths: number; normalizedWeight: number }[];
+    }>('/api/skills/network');
+
+    return {
+      nodes: data.nodes.map((node) => ({
+        id: node.id,
+        label: node.name,
+        totalMonths: node.totalMonths,
+      })),
+      edges: data.edges.map((edge) => ({
+        source: edge.source,
+        target: edge.target,
+        weight: edge.normalizedWeight,
+        coMonths: edge.coMonths,
+      })),
+    };
+  },
 
   getProfile: (hrid: string) =>
-    fetchJson<ProfileResponse[]>(`/api/user/all`).then((profiles) =>
-      profiles.find((p) => p.hrid === hrid)
-    ),
+    fetchJson(`/api/profiles/${hrid}`),
 
   getPersonalGraph: (hrid: string) =>
-    fetchJson<PersonalSkillGraphResponse>(`/api/skill-network/profile/${hrid}`),
+    fetchJson(`/api/profiles/${hrid}/skill-network`),
+
+  getSimilarProfiles: (hrid: string, limit: number) =>
+    fetchJson(`/api/profiles/${hrid}/similar?limit=${limit}`),
 
   getExperts: (skillName: string) =>
-    fetchJson<ExpertResponse[]>(
-      `/api/skill-network/experts?skillName=${encodeURIComponent(skillName)}`
-    ),
-
-  getSimilarProfiles: (hrid: string, limit = 5) =>
-    fetchJson<SimilarProfileResponse[]>(
-      `/api/skill-network/profile/${hrid}/similar?limit=${limit}`
-    ),
+    fetchJson(`/api/skills/${encodeURIComponent(skillName)}/experts`),
 };
